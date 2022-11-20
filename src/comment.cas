@@ -1,0 +1,55 @@
+;
+; ANSに素数を10個格納するプログラム
+;
+TEST    START
+        LAD     GR1,2       ;;GR1::tgt
+        LD      GR2,MAX     ;;GR2::MAX
+        LAD     GR3,1       ;;GR3::idx
+        ST      GR1,ANS     ;;ANS[0]=tgt
+        LAD     GR1,1,GR1   ;;GR1=3
+;;
+LOOP    CALL    ISPRIME
+        LD      GR4,TMP
+        JNZ     NZ          ;;素数ではない場合ジャンプ
+        ST      GR1,ANS,GR3 ;;ANS[idx]=tgt
+        LAD     GR3,1,GR3
+NZ      LAD     GR1,2,GR1   ;;奇数のみ調べる
+        CPA     GR2,GR3
+        JPL     LOOP
+;;
+        RET
+MAX     DC      6
+TMP     DS      1
+ANS     DS      10
+;;
+;; 素数判定 (素数ならばTMP = 0)
+;;
+ISPRIME PUSH    0,GR1       ;;GR1::tgt
+        PUSH    0,GR2       ;;GR2::num
+        PUSH    0,GR3       ;;GR3::idx
+        LAD     GR4,0       ;;GR4::i
+PLOOP   LD      GR2,ANS,GR4 ;;num::ANS[i]
+        CALL    MOD
+        JZE     PFIN
+        LAD     GR4,1,GR4   ;;GR4::i++
+        CPA     GR3,GR4
+        JNZ     PLOOP
+        LAD     GR3,0       ;;素数
+PFIN    ST      GR3,TMP     ;;TMP=0
+        POP     GR3
+        POP     GR2
+        POP     GR1
+        RET
+;;
+;; 剰余演算::GR1 = GR1 % GR2 (GR1 % GR2 = 0 => ZF = 1)
+;;
+MOD     PUSH    0,GR1       ;;GR1::tgt
+        PUSH    0,GR2       ;;GR2::num
+MLOOP   SUBA    GR1,GR2
+        JPL     MLOOP
+        JZE     MFIN
+        ADDA    GR1,GR2
+MFIN    POP     GR2
+        POP     GR1
+        RET
+        END

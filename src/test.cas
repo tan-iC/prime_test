@@ -1,0 +1,47 @@
+;
+; ANSに素数を10個格納するプログラム
+;
+TEST    START
+        LAD     GR1,2
+        LD      GR2,MAX
+        LAD     GR3,1
+        ST      GR1,ANS
+        LAD     GR1,1,GR1
+LOOP    CALL    ISPRIME
+        LD      GR4,TMP
+        JNZ     NZ
+        ST      GR1,ANS,GR3
+        LAD     GR3,1,GR3
+NZ      LAD     GR1,2,GR1
+        CPA     GR2,GR3
+        JPL     LOOP
+        RET
+MAX     DC      10
+TMP     DS      1
+ANS     DS      10
+ISPRIME PUSH    0,GR1
+        PUSH    0,GR2
+        PUSH    0,GR3
+        LAD     GR4,0
+PLOOP   LD      GR2,ANS,GR4
+        CALL    MOD
+        JZE     PFIN
+        LAD     GR4,1,GR4
+        CPA     GR3,GR4
+        JNZ     PLOOP
+        LAD     GR3,0
+PFIN    ST      GR3,TMP
+        POP     GR3
+        POP     GR2
+        POP     GR1
+        RET
+MOD     PUSH    0,GR1
+        PUSH    0,GR2
+MLOOP   SUBA    GR1,GR2
+        JPL     MLOOP
+        JZE     MFIN
+        ADDA    GR1,GR2
+MFIN    POP     GR2
+        POP     GR1
+        RET
+        END
