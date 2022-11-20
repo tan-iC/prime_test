@@ -1,6 +1,6 @@
 
 ans = [2]
-MAX = 10
+MAX = 20
 tgt = 3
 
 while (len(ans) < MAX):
